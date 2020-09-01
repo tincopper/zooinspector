@@ -31,8 +31,7 @@ import javax.swing.JTextField;
  * A Manager for all interactions between the application and the Zookeeper
  * instance
  */
-public interface ZooInspectorManager extends ZooInspectorNodeManager,
-        ZooInspectorNodeTreeManager {
+public interface ZooInspectorManager extends ZooInspectorNodeManager, ZooInspectorNodeTreeManager {
 
     /**
      * @param connectionProps

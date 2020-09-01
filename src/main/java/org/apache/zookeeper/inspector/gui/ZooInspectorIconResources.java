@@ -37,6 +37,11 @@ public class ZooInspectorIconResources {
         return new ImageIcon(readFully(in)); //$NON-NLS-1$
     }
 
+    public static ImageIcon getTmpNodeTreeLeafIcon() {
+        InputStream in = Thread.currentThread().getContextClassLoader().getResourceAsStream("icons/tmp_file_obj.gif");
+        return new ImageIcon(readFully(in)); //$NON-NLS-1$
+    }
+
     /**
      * @return folder open icon
      */
@@ -103,6 +108,14 @@ public class ZooInspectorIconResources {
      * @return add icon
      */
     public static ImageIcon getAddNodeIcon() {
+        InputStream in = Thread.currentThread().getContextClassLoader().getResourceAsStream("icons/new_con.gif");
+        return new ImageIcon(readFully(in)); //$NON-NLS-1$
+    }
+
+    /**
+     * @return add icon
+     */
+    public static ImageIcon getAddTmpNodeIcon() {
         InputStream in = Thread.currentThread().getContextClassLoader().getResourceAsStream("icons/new_con.gif");
         return new ImageIcon(readFully(in)); //$NON-NLS-1$
     }

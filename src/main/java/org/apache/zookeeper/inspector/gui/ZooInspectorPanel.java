@@ -51,6 +51,7 @@ public class ZooInspectorPanel extends JPanel implements
     private final ZooInspectorTreeViewer treeViewer;
     private final ZooInspectorManager zooInspectorManager;
     private final JButton addNodeButton;
+    private final JButton addTmpNodeButton;
     private final JButton deleteNodeButton;
     private final JButton nodeViewersButton;
     private final JButton aboutButton;
@@ -66,10 +67,7 @@ public class ZooInspectorPanel extends JPanel implements
         addNodeButton.setEnabled(false);
         deleteNodeButton.setEnabled(false);
         JOptionPane
-        .showMessageDialog(
-                ZooInspectorPanel.this,
-                info,
-                "Error", JOptionPane.ERROR_MESSAGE);
+        .showMessageDialog(ZooInspectorPanel.this, info, "Error", JOptionPane.ERROR_MESSAGE);
         return false;
       }
       return true;
@@ -104,20 +102,18 @@ public class ZooInspectorPanel extends JPanel implements
         JToolBar toolbar = new JToolBar();
         toolbar.setFloatable(false);
         connectButton = new JButton(ZooInspectorIconResources.getConnectIcon());
-        disconnectButton = new JButton(ZooInspectorIconResources
-                .getDisconnectIcon());
+        disconnectButton = new JButton(ZooInspectorIconResources.getDisconnectIcon());
         refreshButton = new JButton(ZooInspectorIconResources.getRefreshIcon());
         addNodeButton = new JButton(ZooInspectorIconResources.getAddNodeIcon());
-        deleteNodeButton = new JButton(ZooInspectorIconResources
-                .getDeleteNodeIcon());
-        nodeViewersButton = new JButton(ZooInspectorIconResources
-                .getChangeNodeViewersIcon());
-        aboutButton = new JButton(ZooInspectorIconResources
-                .getInformationIcon());
+        addTmpNodeButton = new JButton(ZooInspectorIconResources.getAddTmpNodeIcon());
+        deleteNodeButton = new JButton(ZooInspectorIconResources.getDeleteNodeIcon());
+        nodeViewersButton = new JButton(ZooInspectorIconResources.getChangeNodeViewersIcon());
+        aboutButton = new JButton(ZooInspectorIconResources.getInformationIcon());
         toolbar.add(connectButton);
         toolbar.add(disconnectButton);
         toolbar.add(refreshButton);
         toolbar.add(addNodeButton);
+        toolbar.add(addTmpNodeButton);
         toolbar.add(deleteNodeButton);
         toolbar.add(nodeViewersButton);
         toolbar.add(aboutButton);
@@ -126,6 +122,7 @@ public class ZooInspectorPanel extends JPanel implements
         disconnectButton.setEnabled(false);
         refreshButton.setEnabled(false);
         addNodeButton.setEnabled(false);
+        addTmpNodeButton.setEnabled(false);
         deleteNodeButton.setEnabled(false);
         nodeViewersButton.setEnabled(true);
         nodeViewersButton.setToolTipText("Change Node Viewers");
@@ -134,6 +131,7 @@ public class ZooInspectorPanel extends JPanel implements
         disconnectButton.setToolTipText("Disconnect");
         refreshButton.setToolTipText("Refresh");
         addNodeButton.setToolTipText("Add Node");
+        addTmpNodeButton.setToolTipText("Add Tmp Node");
         deleteNodeButton.setToolTipText("Delete Node");
         connectButton.addActionListener(new ActionListener() {
             @Override
@@ -157,42 +155,24 @@ public class ZooInspectorPanel extends JPanel implements
                 treeViewer.refreshView();
             }
         });
-        addNodeButton.addActionListener(new ActionListener() {
-            String nodeName;
+
+        addTmpNodeButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
-                final List<String> selectedNodes = treeViewer
-                        .getSelectedNodes();
-                if (selectedNodes.size() == 1) {
-                    nodeName = JOptionPane.showInputDialog(
-                            ZooInspectorPanel.this,
-                            "Please Enter a name for the new node",
-                            "Create Node", JOptionPane.INFORMATION_MESSAGE);
-                    if (nodeName != null && nodeName.length() > 0) {
-                        SwingWorker<Boolean, Void> worker = new SwingWorker<Boolean, Void>() {
-
-                            @Override
-                            protected Boolean doInBackground() throws Exception {
-                                return ZooInspectorPanel.this.zooInspectorManager
-                                        .createNode(selectedNodes.get(0),
-                                                nodeName);
-                            }
-
-                            @Override
-                            protected void done() {
-//                                treeViewer.refreshView();
-                              treeViewer.refreshViewAfterAdd(selectedNodes.get(0), nodeName);
-                            }
-                        };
-                        worker.execute();
-                    }
-                } else {
-                    JOptionPane.showMessageDialog(ZooInspectorPanel.this,
-                            "Please select 1 parent node for the new node.");
-                }
+                System.out.println("Add Tmp Node ...");
+                createNodeAction(true);
             }
         });
+
+        addNodeButton.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("Add Node ...");
+                createNodeAction(false);
+            }
+        });
+
         deleteNodeButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -214,8 +194,7 @@ public class ZooInspectorPanel extends JPanel implements
                             @Override
                             protected Boolean doInBackground() throws Exception {
                                 for (String nodePath : selectedNodes) {
-                                    boolean result = ZooInspectorPanel.this.zooInspectorManager
-                                            .deleteNode(nodePath);
+                                    boolean result = ZooInspectorPanel.this.zooInspectorManager.deleteNode(nodePath);
                                     if (!result) {
                                       return false;
                                     }
@@ -225,8 +204,6 @@ public class ZooInspectorPanel extends JPanel implements
 
                             @Override
                             protected void done() {
-//                                treeViewer.refreshView();
-
                               treeViewer.refreshViewAfterDelete(selectedNodes);
                             }
                         };
@@ -261,6 +238,37 @@ public class ZooInspectorPanel extends JPanel implements
         this.add(toolbar, BorderLayout.NORTH);
     }
 
+    private void createNodeAction(boolean isCreateTmpNode) {
+        String nodeName;
+        final List<String> selectedNodes = treeViewer.getSelectedNodes();
+        if (selectedNodes.size() == 1) {
+            nodeName = JOptionPane.showInputDialog(ZooInspectorPanel.this,
+                    "Please Enter a name for the new node",
+                    "Create Node", JOptionPane.INFORMATION_MESSAGE);
+            if (nodeName != null && nodeName.length() > 0) {
+                SwingWorker<Boolean, Void> worker = new SwingWorker<Boolean, Void>() {
+
+                    @Override
+                    protected Boolean doInBackground() throws Exception {
+                        if (isCreateTmpNode) {
+                            return ZooInspectorPanel.this.zooInspectorManager.createTmpNode(selectedNodes.get(0), nodeName);
+                        } else {
+                            return ZooInspectorPanel.this.zooInspectorManager.createNode(selectedNodes.get(0), nodeName);
+                        }
+                    }
+
+                    @Override
+                    protected void done() {
+                      treeViewer.refreshViewAfterAdd(selectedNodes.get(0), nodeName);
+                    }
+                };
+                worker.execute();
+            }
+        } else {
+            JOptionPane.showMessageDialog(ZooInspectorPanel.this, "Please select 1 parent node for the new node.");
+        }
+    }
+
     /**
      * @param connectionProps
      *            the {@link Properties} for connecting to the zookeeper
@@ -285,6 +293,7 @@ public class ZooInspectorPanel extends JPanel implements
                         disconnectButton.setEnabled(true);
                         refreshButton.setEnabled(true);
                         addNodeButton.setEnabled(true);
+                        addTmpNodeButton.setEnabled(true);
                         deleteNodeButton.setEnabled(true);
 
                         // save successful connect string in default properties

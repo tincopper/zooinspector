@@ -59,8 +59,7 @@ import org.apache.zookeeper.inspector.manager.ZooInspectorManager;
  * A {@link JDialog} for configuring which {@link ZooInspectorNodeViewer}s to
  * show in the application
  */
-public class ZooInspectorNodeViewersDialog extends JDialog implements
-        ListSelectionListener {
+public class ZooInspectorNodeViewersDialog extends JDialog implements ListSelectionListener {
 
     private final JButton upButton;
     private final JButton downButton;
@@ -84,16 +83,14 @@ public class ZooInspectorNodeViewersDialog extends JDialog implements
      *            - the {@link ZooInspectorManager} for the application
      *
      */
-    public ZooInspectorNodeViewersDialog(Frame frame,
+    public ZooInspectorNodeViewersDialog(final Frame frame,
             final List<ZooInspectorNodeViewer> currentViewers,
             final Collection<NodeViewersChangeListener> listeners,
             final ZooInspectorManager manager) {
         super(frame);
-        final List<ZooInspectorNodeViewer> newViewers = new ArrayList<ZooInspectorNodeViewer>(
-                currentViewers);
+        final List<ZooInspectorNodeViewer> newViewers = new ArrayList<ZooInspectorNodeViewer>(currentViewers);
         this.setLayout(new BorderLayout());
-        this.setIconImage(ZooInspectorIconResources.getChangeNodeViewersIcon()
-                .getImage());
+        this.setIconImage(ZooInspectorIconResources.getChangeNodeViewersIcon().getImage());
         this.setTitle("About ZooInspector");
         this.setModal(true);
         this.setAlwaysOnTop(true);
@@ -135,10 +132,7 @@ public class ZooInspectorNodeViewersDialog extends JDialog implements
 
                 JList.DropLocation dl = (JList.DropLocation) info
                         .getDropLocation();
-                if (dl.getIndex() == -1) {
-                    return false;
-                }
-                return true;
+                return dl.getIndex() != -1;
             }
 
             @Override

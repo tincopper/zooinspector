@@ -17,12 +17,13 @@
  */
 package org.apache.zookeeper.inspector.manager;
 
+import org.apache.zookeeper.CreateMode;
+
 /**
  * A Manager for all interactions between the application and the node tree in a
  * Zookeeper instance
  */
-public interface ZooInspectorNodeTreeManager extends
-        ZooInspectorReadOnlyManager {
+public interface ZooInspectorNodeTreeManager extends ZooInspectorReadOnlyManager {
 
     /**
      * @param parent
@@ -33,6 +34,10 @@ public interface ZooInspectorNodeTreeManager extends
      */
     public abstract boolean createNode(String parent, String nodeName);
 
+    public abstract boolean createTmpNode(String parent, String nodeName);
+
+    public abstract boolean createNode(String parent, String nodeName, CreateMode mode);
+
     /**
      * @param nodePath
      *            - the path to the node to delete
@@ -40,4 +45,5 @@ public interface ZooInspectorNodeTreeManager extends
      */
     public abstract boolean deleteNode(String nodePath);
 
+    boolean isTmpPath(String path);
 }
